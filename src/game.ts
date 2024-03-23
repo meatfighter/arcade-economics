@@ -7,7 +7,6 @@ export class Game {
     company: string;
     reducedCompany: string;
     inflated: number;
-    deflated: number;
 
     constructor(title: string, year: number, company: string) {
         this.title = title;
@@ -16,6 +15,5 @@ export class Game {
         this.company = company;
         this.reducedCompany = reduce(company);
         this.inflated = 0;
-        this.deflated = 0;
     }
 }

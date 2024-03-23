@@ -4,7 +4,7 @@ import type { Ref } from 'vue';
 import type { VDataTable } from 'vuetify/components'
 import { reduce } from "@/reduce";
 import { Game } from "@/game";
-import {downloadGames} from "@/download";
+import {fetchGames} from "@/download";
 
 type ReadonlyHeaders = VDataTable['$props']['headers'];
 
@@ -33,17 +33,11 @@ const headers: ReadonlyHeaders = [
     align: 'end',
     sortable: true,
   },
-  {
-    key: 'deflated',
-    title: 'Deflated ($)',
-    align: 'end',
-    sortable: true,
-  },
 ];
 
 const games: Ref<Game[] | undefined> = ref(undefined);
 const search: Ref<string> = ref('');
-const loading: Ref<boolean> = ref(false);//computed(() => games.value !== undefined);
+const loading: Ref<boolean> = computed(() => games.value === undefined);
 
 let lastQuery = '';
 let reducedQuery = '';
@@ -67,7 +61,7 @@ function searchFilter(_: string, query: string, item?: any) {
   return lastRowValue;
 }
 
-onMounted(async () => games.value = await downloadGames());
+onMounted(async () => games.value = await fetchGames());
 </script>
 
 <template>
