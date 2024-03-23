@@ -1,56 +1,33 @@
 import { delay } from "@/delay";
 import { Game } from "@/game";
 import JSZip from "jszip";
+import { SeriesResponse } from "@/types/series-types";
+import { useSeriesStore } from "@/store/series-store";
 
 const START_YEAR = 1971;
 
-type SeriesData = {
-    year: string;
-    period: string;
-    periodName: string;
-    latest: string;
-    value: string;
-    footnotes: {}[];
-};
-
-type Series = {
-    seriesID: string;
-    data: SeriesData[];
-};
-
-type SeriesResults = {
-    series: Series[];
-};
-
-type SeriesResponse = {
-    status: string;
-    responseTime: number;
-    message: string[];
-    Results: SeriesResults;
-};
-
 async function fetchInflationData(startYear: number, endYear: number): Promise<SeriesResponse> {
-
-    console.log(`https://api.bls.gov/publicAPI/v2/timeseries/data`
-        + `?seriesid=CUUR0000SA0&startyear=${startYear}&endyear=${endYear}&catalog=false`
-        + `&calculations=false&annualaverage=true&aspects=false`);
-
-
-    // while (true) {
+    while (true) {
         try {
-            const response = await fetch(`https://api.bls.gov/publicAPI/v2/timeseries/data/`
-                    + `seriesid=CUUR0000SA0&startyear=${startYear}&endyear=${endYear}&catalog=false&`
-                    + `calculations=false&annualaverage=true&aspects=false`);
+            const response = await fetch('https://api.bls.gov/publicAPI/v2/timeseries/data/', {
+                method: 'POST',
+                mode: "cors",
+                credentials: 'omit',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `seriesid=CUUR0000SA0&startyear=${startYear}&endyear=${endYear}&catalog=false`
+                        + `&calculations=false&annualaverage=true&aspects=false`,
+            });
             if (!response.ok) {
                 await delay();
-                // continue;
+                continue;
             }
             return await response.json();
         } catch {
             await delay();
         }
-    // }
-    return { } as SeriesResponse;
+    }
 }
 
 async function fetchGameDescriptions(): Promise<Game[]> {
@@ -69,9 +46,12 @@ async function fetchGameDescriptions(): Promise<Game[]> {
             while (true) {
                 const title = tokens[i++];
                 const year = +tokens[i++];
-                const company = tokens[i++];
+                let company = tokens[i++];
                 if (!year) {
                     break;
+                }
+                if (!company || company.length === 0) {
+                    company = 'Unknown';
                 }
                 games.push(new Game(title, year, company));
             }
@@ -82,10 +62,47 @@ async function fetchGameDescriptions(): Promise<Game[]> {
     }
 }
 
+function getMinYear(response: SeriesResponse) {
+    if (!response.Results.series || !response.Results.series[0].data) {
+        return -1;
+    }
+    let minYear = Number.MAX_SAFE_INTEGER;
+    for (const entry of response.Results.series[0].data) {
+        minYear = Math.min(minYear, +entry.year);
+    }
+    return minYear;
+}
+
+function cacheSeriesResponses(responses: SeriesResponse[]): SeriesResponse[] {
+    const store = useSeriesStore();
+    const rs: SeriesResponse[] = store.loadSeriesResponses() || [];
+    for (let i = responses.length - 1; i >= 0; --i) {
+        const response = responses[i];
+        if (response.status !== 'REQUEST_SUCCEEDED') {
+            responses.splice(i, 1);
+        } else {
+            const minYear = getMinYear(response);
+            for (let j = rs.length - 1; j >= 0; --j) {
+                const r = rs[j];
+                if (getMinYear(r) === minYear) {
+                    rs.splice(j, 1);
+                    break;
+                }
+            }
+        }
+    }
+    responses.push(...rs);
+    store.saveSeriesResponses(responses);
+    return responses;
+}
+
 function assignInflatedValues(games: Game[], responses: SeriesResponse[]) {
     const values: number[] = [];
     const periods: string[] = [];
     for (const response of responses) {
+        if (response.status !== 'REQUEST_SUCCEEDED' || !response.Results.series || !response.Results.series[0].data) {
+            continue;
+        }
         for (const entry of response.Results.series[0].data) {
             const index = +entry.year - START_YEAR;
             if (!periods[index] || periods[index] < entry.period) {
@@ -94,8 +111,9 @@ function assignInflatedValues(games: Game[], responses: SeriesResponse[]) {
             }
         }
     }
+    const current = values[values.length - 1];
     for (let i = values.length - 1; i >= 0; --i) {
-        values[i] *= 0.25 / values[0];
+        values[i] = 0.25 * current / values[i];
     }
     games.forEach(game => game.inflated = values[game.year - START_YEAR]);
 }
@@ -104,10 +122,11 @@ export async function fetchGames(): Promise<Game[]> {
     const seriesPromises: Promise<SeriesResponse>[] = [];
     const currentYear: number = new Date().getFullYear();
     for (let year = START_YEAR; year <= currentYear; year += 10) {
-        seriesPromises.push(fetchInflationData(year, Math.min(currentYear, year + 9)));
+        seriesPromises.push(fetchInflationData(year, year + 9));
     }
     const games: Game[] = await fetchGameDescriptions();
-    assignInflatedValues(games, await Promise.all(seriesPromises));
+    const responses: SeriesResponse[] = cacheSeriesResponses(await Promise.all(seriesPromises));
+    assignInflatedValues(games, responses);
     return games;
 }
 
