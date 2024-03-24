@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import type { Ref } from 'vue';
 import type { VDataTable } from 'vuetify/components'
 import { reduce } from "@/reduce";
@@ -39,38 +39,44 @@ const games: Ref<Game[] | undefined> = ref(undefined);
 const search: Ref<string> = ref('');
 const loading: Ref<boolean> = computed(() => games.value === undefined);
 
-let lastQuery = '';
 let reducedQuery = '';
-let lastRowIndex = -1;
-let lastRowValue = false;
 
-function searchFilter(_: string, query: string, item?: any) {
-  if (query !== lastQuery) {
-    lastQuery = query;
-    reducedQuery = reduce(query);
-    lastRowIndex = -1;
-  }
+watch(search, () => reducedQuery = reduce(search.value));
 
-  if (item.index === lastRowIndex) {
-    return lastRowValue;
-  }
-  lastRowIndex = item.index;
-
-  const i = item.raw;
-  lastRowValue = i.reducedTitle.indexOf(reducedQuery) >= 0 || i.reducedCompany.indexOf(reducedQuery) >= 0;
-  return lastRowValue;
+function searchFilter(value: string, query: string, item?: any) {
+  return item.raw.reducedTitle.indexOf(reducedQuery) >= 0 || item.raw.reducedCompany.indexOf(reducedQuery) >= 0;
 }
 
+const filterKeys = [ 'title' ];
+
+const itemsPerPageOptions = [
+  { value: 10, title: '10' },
+  { value: 25, title: '25' },
+  { value: 50, title: '50' },
+  { value: 100, title: '100' },
+];
+
 onMounted(async () => games.value = await fetchGames());
+
+import { useTheme } from 'vuetify'
+
+const theme = useTheme()
+
+function toggleTheme () {
+  theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
+}
 </script>
 
 <template>
+  <v-btn @click="toggleTheme">toggle theme</v-btn>
   <v-data-table
       :items="games"
       :headers="headers"
       :search="search"
       :custom-filter="searchFilter"
-      :loading="loading">
+      :filter-keys="filterKeys"
+      :loading="loading"
+      :items-per-page-options="itemsPerPageOptions">
     <template v-slot:top>
       <v-text-field
           v-model="search"
