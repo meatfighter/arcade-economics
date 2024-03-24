@@ -8,7 +8,7 @@ import {fetchGames} from "@/download";
 
 type ReadonlyHeaders = VDataTable['$props']['headers'];
 
-const headers: ReadonlyHeaders = [
+const headers: Ref<ReadonlyHeaders> = ref([
   {
     key: 'title',
     title: 'Title',
@@ -33,7 +33,7 @@ const headers: ReadonlyHeaders = [
     align: 'end',
     sortable: true,
   },
-];
+]);
 
 const games: Ref<Game[] | undefined> = ref(undefined);
 const search: Ref<string> = ref('');
@@ -57,18 +57,9 @@ const itemsPerPageOptions = [
 ];
 
 onMounted(async () => games.value = await fetchGames());
-
-import { useTheme } from 'vuetify'
-
-const theme = useTheme()
-
-function toggleTheme () {
-  theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
-}
 </script>
 
 <template>
-  <v-btn @click="toggleTheme">toggle theme</v-btn>
   <v-data-table
       :items="games"
       :headers="headers"
@@ -80,7 +71,7 @@ function toggleTheme () {
     <template v-slot:top>
       <v-text-field
           v-model="search"
-          label="Search"
+          label="Search arcade title"
           prepend-inner-icon="mdi-magnify"
           variant="outlined"
           hide-details
