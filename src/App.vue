@@ -1,9 +1,16 @@
 <template>
   <v-app>
     <v-main>
-      <v-card class="mx-auto" width="978px" variant="flat">
+      <div id="centered">
         <router-view />
-      </v-card>
+      </div>
     </v-main>
   </v-app>
 </template>
+
+<style scoped>
+#centered {
+  max-width: 978px;
+  margin: 0 auto;
+}
+</style>
