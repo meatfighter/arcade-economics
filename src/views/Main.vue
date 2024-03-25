@@ -3,51 +3,30 @@ import ArcadeTable from "@/components/ArcadeTable.vue";
 </script>
 
 <template>
-  <v-main>
-    <v-container fluid>
-      <v-row justify="center" no-gutters>
-        <v-col cols="12" md="8" lg="6" xl="6" xxl="4">
-
-          <v-container>
-            <v-row>
-
-
-<!--              <v-container>-->
-<!--                <v-row no-gutters>-->
-<!--                  <v-col justify="start" align-self="start" cols="2">-->
-<!--                    <v-img src="@/assets/insert-coin.svg" min-width="100px" max-width="100px" alt="Insert Coin"></v-img>-->
-<!--                  </v-col>-->
-<!--                  <v-col justify="center" align-self="center" cols="10">-->
-<!--                    <v-sheet>Retro Gaming, Modern Money</v-sheet>-->
-<!--                  </v-col>-->
-<!--                </v-row>-->
-<!--              </v-container>-->
-              <!--            <v-row no-gutters>-->
-              <!--              How Much Would That Quarter Cost You Today?-->
-              <!--            </v-row>-->
-
-              <v-card variant="flat">
-                <div class="d-flex flex-no-wrap justify-space-between">
-                  <v-avatar class="ma-3" rounded="0" size="125">
-                    <v-img src="@/assets/insert-coin.svg" min-width="100px" max-width="100px" alt="Insert Coin"></v-img>
-                  </v-avatar>
-                  <div>
-                    <v-card-title>Retro Gaming, Modern Money</v-card-title>
-                    <v-card-subtitle>How Much Would That Quarter Cost You Today?</v-card-subtitle>
-                  </div>
-                </div>
-              </v-card>
-
-
-            </v-row>
-
-            <v-row no-gutters>
-              <arcade-table/>
-            </v-row>
-          </v-container>
-
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-main>
+  <v-container>
+    <div id="main-container">
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor.
+      </p>
+      <p>
+        Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.
+      </p>
+      <arcade-table/>
+    </div>
+  </v-container>
 </template>
+
+<style scoped>
+#main-container {
+  max-width: 978px;
+  margin: 0 auto;
+}
+
+p {
+  font-size: 16px;
+  line-height: 27px;
+  font-weight: 300;
+  text-align: left;
+  font-family: 'Open Sans', sans-serif;
+}
+</style>
