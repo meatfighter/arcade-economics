@@ -1,7 +1,9 @@
 <template>
   <v-app>
     <v-main>
-      <router-view />
+      <v-card class="mx-auto" width="978px" variant="flat">
+        <router-view />
+      </v-card>
     </v-main>
   </v-app>
 </template>
