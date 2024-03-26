@@ -1,16 +1,9 @@
 <template>
   <v-app>
     <v-main>
-      <div id="centered">
+      <v-sheet max-width="978px" class="mx-auto">
         <router-view />
-      </div>
+      </v-sheet>
     </v-main>
   </v-app>
 </template>
-
-<style scoped>
-#centered {
-  max-width: 978px;
-  margin: 0 auto;
-}
-</style>

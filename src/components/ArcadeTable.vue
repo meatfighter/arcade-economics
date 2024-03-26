@@ -4,36 +4,47 @@ import type { Ref } from 'vue';
 import type { VDataTable } from 'vuetify/components'
 import { reduce } from "@/reduce";
 import { Game } from "@/game";
-import {fetchGames} from "@/download";
+import { fetchGames } from "@/download";
+import { useDisplay } from 'vuetify'
 
 type ReadonlyHeaders = VDataTable['$props']['headers'];
 
-const headers: Ref<ReadonlyHeaders> = ref([
+const headerValues: ReadonlyHeaders = [
   {
     key: 'title',
     title: 'Title',
     align: 'start',
     sortable: true,
+    width: '25%',
   },
   {
     key: 'year',
     title: 'Year',
     align: 'end',
     sortable: true,
+    width: '25%',
   },
   {
     key: 'company',
     title: 'Company',
     align: 'start',
     sortable: true,
+    width: '25%',
   },
   {
     key: 'inflated',
     title: 'Inflated ($)',
     align: 'end',
     sortable: true,
+    width: '25%',
   },
-]);
+];
+
+const { xs } = useDisplay();
+const largeHeaderValues = [ headerValues[0], headerValues[1], headerValues[2], headerValues[3] ];
+const smallHeaderValues = [ headerValues[0], headerValues[1], headerValues[3] ];
+const headers: Ref<ReadonlyHeaders> = computed(() => xs.value ? smallHeaderValues : largeHeaderValues);
+
 
 const games: Ref<Game[] | undefined> = ref(undefined);
 const search: Ref<string> = ref('');
@@ -79,9 +90,6 @@ onMounted(async () => games.value = await fetchGames());
       ></v-text-field>
     </template>
     <template v-slot:item.inflated="{ value }">
-      {{ value.toFixed(2) }}
-    </template>
-    <template v-slot:item.deflated="{ value }">
       {{ value.toFixed(2) }}
     </template>
     <template v-slot:loading>

@@ -6,6 +6,8 @@ import { useSeriesStore } from "@/store/series-store";
 
 const START_YEAR = 1971;
 
+// TODO RETURN ? IF UNABLE TO DOWNLOAD INFLATION VALUES
+
 async function fetchInflationData(startYear: number, endYear: number): Promise<SeriesResponse> {
     while (true) {
         try {
