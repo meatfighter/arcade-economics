@@ -1,12 +1,10 @@
-import { delay } from "@/delay";
-import { Game } from "@/game";
+import { delay } from "@/utils/delay";
+import { Game } from "@/types/game";
 import JSZip from "jszip";
 import { SeriesResponse } from "@/types/series-types";
 import { useSeriesStore } from "@/store/series-store";
 
 const START_YEAR = 1971;
-
-// TODO RETURN ? IF UNABLE TO DOWNLOAD INFLATION VALUES
 
 async function fetchInflationData(startYear: number, endYear: number): Promise<SeriesResponse> {
     while (true) {

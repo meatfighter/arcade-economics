@@ -1,4 +1,4 @@
-import { reduce } from './reduce';
+import { reduce } from '@/utils/reduce';
 
 export class Game {
     title: string;

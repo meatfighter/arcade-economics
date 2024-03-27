@@ -2,9 +2,9 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import type { Ref } from 'vue';
 import type { VDataTable } from 'vuetify/components'
-import { reduce } from "@/reduce";
-import { Game } from "@/game";
-import { fetchGames } from "@/download";
+import { reduce } from "@/utils/reduce";
+import { Game } from "@/types/game";
+import { fetchGames } from "@/services/download";
 import { useDisplay } from 'vuetify'
 
 type ReadonlyHeaders = VDataTable['$props']['headers'];
@@ -14,29 +14,34 @@ const headerValues: ReadonlyHeaders = [
     key: 'title',
     title: 'Title',
     align: 'start',
+    width: '40%',
     sortable: true,
-    width: '25%',
+    sortRaw: (a: Game, b: Game) => a.reducedTitle.localeCompare(b.reducedTitle),
   },
   {
     key: 'year',
     title: 'Year',
     align: 'end',
+    width: '10%',
     sortable: true,
-    width: '25%',
   },
   {
     key: 'company',
     title: 'Company',
     align: 'start',
+    width: '40%',
     sortable: true,
-    width: '25%',
+    sortRaw: (a: Game, b: Game) => a.reducedCompany.localeCompare(b.reducedCompany),
   },
   {
     key: 'inflated',
     title: 'Inflated ($)',
     align: 'end',
+    width: '10%',
     sortable: true,
-    width: '25%',
+    headerProps: {
+      class: 'text-no-wrap',
+    },
   },
 ];
 
@@ -90,7 +95,7 @@ onMounted(async () => games.value = await fetchGames());
       ></v-text-field>
     </template>
     <template v-slot:item.inflated="{ value }">
-      {{ value.toFixed(2) }}
+      {{ value ? value.toFixed(2) : 'N/A' }}
     </template>
     <template v-slot:loading>
       <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
