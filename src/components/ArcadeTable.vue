@@ -16,7 +16,7 @@ const headerValues: ReadonlyHeaders = [
     align: 'start',
     width: '40%',
     sortable: true,
-    sortRaw: (a: Game, b: Game) => a.reducedTitle.localeCompare(b.reducedTitle),
+    sortRaw: (a, b) => a.reducedTitle.localeCompare(b.reducedTitle),
   },
   {
     key: 'year',
@@ -31,7 +31,7 @@ const headerValues: ReadonlyHeaders = [
     align: 'start',
     width: '40%',
     sortable: true,
-    sortRaw: (a: Game, b: Game) => a.reducedCompany.localeCompare(b.reducedCompany),
+    sortRaw: (a, b) => a.reducedCompany.localeCompare(b.reducedCompany),
   },
   {
     key: 'inflated',
