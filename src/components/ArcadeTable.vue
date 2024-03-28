@@ -8,6 +8,7 @@ import { fetchGames } from "@/services/download";
 import { useDisplay } from 'vuetify'
 
 type ReadonlyHeaders = VDataTable['$props']['headers'];
+type SortItems = VDataTable['$props']['sortBy'];
 
 const headerValues: ReadonlyHeaders = [
   {
@@ -72,6 +73,27 @@ const itemsPerPageOptions = [
   { value: 100, title: '100' },
 ];
 
+const sortBy: Ref<SortItems> = ref([{
+  key: 'title',
+  order: 'asc',
+}]);
+
+let lastSortKey = 'title';
+
+watch(sortBy, () => {
+  if (!sortBy.value) {
+    return;
+  }
+  if (sortBy.value.length === 0) {
+    sortBy.value = [{
+      key: lastSortKey,
+      order: 'asc',
+    }];
+  } else {
+    lastSortKey = sortBy.value[0].key;
+  }
+});
+
 onMounted(async () => games.value = await fetchGames());
 </script>
 
@@ -83,7 +105,8 @@ onMounted(async () => games.value = await fetchGames());
       :custom-filter="searchFilter"
       :filter-keys="filterKeys"
       :loading="loading"
-      :items-per-page-options="itemsPerPageOptions">
+      :items-per-page-options="itemsPerPageOptions"
+      v-model:sort-by="sortBy">
     <template v-slot:top>
       <v-text-field
           v-model="search"
