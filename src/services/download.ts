@@ -7,8 +7,10 @@ import { useSeriesStore } from "@/store/series-store";
 const START_YEAR = 1971;
 
 async function fetchInflationData(startYear: number, endYear: number): Promise<SeriesResponse> {
+    console.log('fetchInflationData'); // TODO REMOVE
     while (true) {
         try {
+            console.log('--1'); // TODO REMOVE
             const response = await fetch('https://api.bls.gov/publicAPI/v2/timeseries/data/', {
                 method: 'POST',
                 mode: "cors",
@@ -19,12 +21,16 @@ async function fetchInflationData(startYear: number, endYear: number): Promise<S
                 body: `seriesid=CUUR0000SA0&startyear=${startYear}&endyear=${endYear}&catalog=false`
                         + `&calculations=false&annualaverage=true&aspects=false`,
             });
+            console.log('--2'); // TODO REMOVE
             if (!response.ok) {
+                console.log('--3'); // TODO REMOVE
                 await delay();
                 continue;
             }
+            console.log('--4'); // TODO REMOVE
             return await response.json();
         } catch {
+            console.log('--5'); // TODO REMOVE
             await delay();
         }
     }
@@ -100,6 +106,7 @@ function assignInflatedValues(games: Game[], responses: SeriesResponse[]) {
     const values: number[] = [];
     const periods: string[] = [];
     for (const response of responses) {
+        console.log(response); // TODO REMOVE
         if (response.status !== 'REQUEST_SUCCEEDED' || !response.Results.series || !response.Results.series[0].data) {
             continue;
         }
@@ -122,6 +129,7 @@ export async function fetchGames(): Promise<Game[]> {
     const seriesPromises: Promise<SeriesResponse>[] = [];
     const currentYear: number = new Date().getFullYear();
     for (let year = START_YEAR; year <= currentYear; year += 10) {
+        console.log(`fetch: ${year}`); // TODO REMOVE
         seriesPromises.push(fetchInflationData(year, year + 9));
     }
     const games: Game[] = await fetchGameDescriptions();
