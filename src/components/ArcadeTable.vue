@@ -78,22 +78,6 @@ const sortBy: Ref<SortItems> = ref([{
   order: 'asc',
 }]);
 
-let lastSortKey = 'title';
-
-watch(sortBy, () => {
-  if (!sortBy.value) {
-    return;
-  }
-  if (sortBy.value.length === 0) {
-    sortBy.value = [{
-      key: lastSortKey,
-      order: 'asc',
-    }];
-  } else {
-    lastSortKey = sortBy.value[0].key;
-  }
-});
-
 onMounted(async () => games.value = await downloadGames());
 </script>
 
@@ -106,6 +90,7 @@ onMounted(async () => games.value = await downloadGames());
       :filter-keys="filterKeys"
       :loading="loading"
       :items-per-page-options="itemsPerPageOptions"
+      :must-sort="true"
       v-model:sort-by="sortBy">
     <template v-slot:top>
       <v-text-field
