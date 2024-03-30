@@ -4,7 +4,7 @@ import type { Ref } from 'vue';
 import type { VDataTable } from 'vuetify/components'
 import { reduce } from "@/utils/reduce";
 import { Game } from "@/types/game";
-import { fetchGames } from "@/services/download";
+import { downloadGames } from "@/services/download";
 import { useDisplay } from 'vuetify'
 
 type ReadonlyHeaders = VDataTable['$props']['headers'];
@@ -94,7 +94,7 @@ watch(sortBy, () => {
   }
 });
 
-onMounted(async () => games.value = await fetchGames());
+onMounted(async () => games.value = await downloadGames());
 </script>
 
 <template>

@@ -7,7 +7,13 @@
             min-width="100px"
             max-width="100px"
             alt="Insert Coin"
-        ></v-img>
+        >
+          <template v-slot:placeholder>
+            <div class="d-flex align-center justify-center fill-height">
+              <v-progress-circular color="grey-lighten-4" indeterminate></v-progress-circular>
+            </div>
+          </template>
+        </v-img>
       </v-col>
       <v-col class="px-5 py-0">
         <div class="text-h4 text-xl-h3 text-lg-h3 text-md-h3 mb-md-2">Retro Gaming, Modern Money</div>
