@@ -1,0 +1,8 @@
+import standard from '@vue/eslint-config-standard';
+import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript';
+
+export default defineConfigWithVueTs(
+    { ignores: ['dist/**', 'node_modules/**'] },
+    ...standard,
+    vueTsConfigs.recommended,
+);
