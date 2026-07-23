@@ -16,7 +16,7 @@
         </v-img>
       </v-col>
       <v-col class="px-5 py-0">
-        <div class="text-h4 text-xl-h3 text-lg-h3 text-md-h3 mb-md-2">Retro Gaming, Modern Money</div>
+        <h1 class="text-h4 text-xl-h3 text-lg-h3 text-md-h3 mb-md-2">Retro Gaming, Modern Money</h1>
         <div class="text-h6 text-xl-h5 text-lg-h5 text-md-h5 hidden-xs">How Much Would That Quarter Cost You Today?</div>
       </v-col>
     </v-row>
